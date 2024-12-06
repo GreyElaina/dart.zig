@@ -16,8 +16,8 @@
             .hash = "1220ef6711b0eca9b2d71dc293af8e7fa6ad2f1df6f2921989dc146f35ee93d62a8e",
         },
         .boringssl = .{
-            .url = "https://github.com/MidstallSoftware/boringssl.zig/archive/a5edd8c3a782d938c38ba0c307a283cda55be0f9.tar.gz",
-            .hash = "1220167769a6af6a028d03462b98c6acee666460e927d185b9a6b726bed72a0f0541",
+            .url = "https://github.com/MidstallSoftware/boringssl.zig/archive/40e05ef27a0f97e3ffc2190ef2059a76e63af28e.tar.gz",
+            .hash = "1220d9a8bcc89c9381669f907e7fa0914c12b63030447918dc7a9f1c11628f69e7dc",
         },
     },
 }

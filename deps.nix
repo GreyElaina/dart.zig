@@ -11,13 +11,6 @@ linkFarm "zig-packages" [
     };
   }
   {
-    name = "1220167769a6af6a028d03462b98c6acee666460e927d185b9a6b726bed72a0f0541";
-    path = fetchzip {
-      url = "https://github.com/MidstallSoftware/boringssl.zig/archive/a5edd8c3a782d938c38ba0c307a283cda55be0f9.tar.gz";
-      hash = "sha256-RCrwwqpBjRg9Q1r8HTX/KjUMR77eMMjx9lm/LymQQmw=";
-    };
-  }
-  {
     name = "12201cad8e77deaaa1702718e70346a30f4b54d169e9152a696621d098edb093d4f3";
     path = fetchzip {
       url = "https://github.com/google/boringssl/archive/2635bedc5d12407e4e78f2250d9c8c534954e045.tar.gz";
@@ -36,6 +29,13 @@ linkFarm "zig-packages" [
     path = fetchzip {
       url = "https://zlib.net/zlib-1.3.1.tar.gz";
       hash = "sha256-acY8yFzIRYbrZ2CGODoxLnZuppsP6KZy19I9Yy77pfc=";
+    };
+  }
+  {
+    name = "1220d9a8bcc89c9381669f907e7fa0914c12b63030447918dc7a9f1c11628f69e7dc";
+    path = fetchzip {
+      url = "https://github.com/MidstallSoftware/boringssl.zig/archive/40e05ef27a0f97e3ffc2190ef2059a76e63af28e.tar.gz";
+      hash = "sha256-GYZJnw0XL2zH4dlGvBo0wYKTPBENrM1kvXqEhvuxql0=";
     };
   }
   {
