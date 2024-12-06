@@ -192,6 +192,11 @@ pub fn build(b: *std.Build) void {
         .flags = dart_cflags,
     });
 
+    libdart_platform.addCSourceFile(.{
+        .file = dart_sdk_dep.path("runtime/platform/no_tsan.cc"),
+        .flags = dart_cflags,
+    });
+
     libdart_platform.addIncludePath(dart_sdk_dep.path("runtime"));
     libdart_platform.linkLibCpp();
 
