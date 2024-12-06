@@ -1,0 +1,23 @@
+.{
+    .name = "dart-sdk",
+    .version = "3.7.0",
+    .paths = .{"."},
+    .dependencies = .{
+        .@"dart-sdk" = .{
+            .url = "https://github.com/dart-lang/sdk/archive/refs/tags/3.7.0-217.0.dev.tar.gz",
+            .hash = "1220dc88c809fcc6427d1f297744c40a304843d425b180684769bae4f18bedca16f7",
+        },
+        .icu = .{
+            .url = "https://github.com/MidstallSoftware/icu.zig/archive/1341bf90d54ff64511ff918a6efb297541fdbfb4.tar.gz",
+            .hash = "1220510a81c32e8fd2db7ef7a47eee0a65f5f058ef151d2b86213131d4deca74f0db",
+        },
+        .zlib = .{
+            .url = "https://github.com/MidstallSoftware/zlib.zig/archive/950afdcab90435db0a7199d79dcfadc6d071929d.tar.gz",
+            .hash = "1220ef6711b0eca9b2d71dc293af8e7fa6ad2f1df6f2921989dc146f35ee93d62a8e",
+        },
+        .boringssl = .{
+            .url = "https://github.com/MidstallSoftware/boringssl.zig/archive/a5edd8c3a782d938c38ba0c307a283cda55be0f9.tar.gz",
+            .hash = "1220167769a6af6a028d03462b98c6acee666460e927d185b9a6b726bed72a0f0541",
+        },
+    },
+}
