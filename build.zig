@@ -90,6 +90,7 @@ pub fn build(b: *std.Build) void {
             },
         }),
         "-DDART_PRECOMPILER",
+        "-DEXCLUDE_CFE_AND_KERNEL_PLATFORM",
     };
 
     const double_conversion = b.addStaticLibrary(.{
@@ -370,7 +371,7 @@ pub fn build(b: *std.Build) void {
     });
 
     gen_snapshot_dart_io.addCSourceFiles(.{
-        .root = dart_sdk_dep.path("third_party/fallback_root_certificates/"),
+        .root = dart_sdk_dep.path("third_party/fallback_root_certificates"),
         .files = &.{
             "root_certificates.cc",
         },
@@ -425,4 +426,68 @@ pub fn build(b: *std.Build) void {
     gen_snapshot.linkLibrary(gen_snapshot_dart_io);
 
     b.installArtifact(gen_snapshot);
+
+    const dart_exe = b.addExecutable(.{
+        .name = "dart",
+        .target = target,
+        .optimize = optimize,
+        .linkage = linkage,
+    });
+
+    dart_exe.addCSourceFiles(.{
+        .root = dart_sdk_dep.path("runtime/bin"),
+        .files = &.{
+            "builtin.cc",
+            "builtin_natives.cc",
+            "crashpad.cc",
+            "dart_embedder_api_impl.cc",
+            "dartdev_isolate.cc",
+            "dfe.cc",
+            "error_exit.cc",
+            "gzip.cc",
+            "icu.cc",
+            "io_natives.cc",
+            "loader.cc",
+            "main.cc",
+            "main_impl.cc",
+            "main_options.cc",
+            "options.cc",
+            "observatory_assets_empty.cc",
+            "snapshot_empty.cc",
+            "snapshot_utils.cc",
+            "vmservice_impl.cc",
+        },
+        .flags = dart_cflags,
+    });
+
+    dart_exe.addCSourceFiles(.{
+        .root = dart_sdk_dep.path("runtime/bin"),
+        .files = collectSources(b, dart_sdk_dep.path("runtime/bin/io_impl_sources.gni"), "io_impl_sources"),
+        .flags = dart_cflags,
+    });
+
+    dart_exe.addCSourceFiles(.{
+        .root = dart_sdk_dep.path("third_party/fallback_root_certificates"),
+        .files = &.{
+            "root_certificates.cc",
+        },
+        .flags = dart_cflags,
+    });
+
+    dart_exe.addIncludePath(dart_sdk_dep.path("runtime"));
+    dart_exe.addIncludePath(.{
+        .generated = .{ .file = &dart_headers.generated_directory },
+    });
+
+    dart_exe.linkLibrary(boringssl.artifact("crypto"));
+    dart_exe.linkLibrary(boringssl.artifact("ssl"));
+    dart_exe.linkLibrary(zlib.artifact("z"));
+    dart_exe.linkLibrary(icu.artifact("icui18n"));
+    dart_exe.linkLibrary(icu.artifact("icuuc"));
+    dart_exe.linkLibrary(native_assets);
+    dart_exe.linkLibrary(libdart_builtin);
+    dart_exe.linkLibrary(libdart_platform);
+    dart_exe.linkLibrary(libdart);
+
+    b.installArtifact(dart_exe);
 }
