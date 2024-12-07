@@ -4,8 +4,8 @@
     .paths = .{"."},
     .dependencies = .{
         .@"dart-sdk" = .{
-            .url = "https://github.com/dart-lang/sdk/archive/refs/tags/3.7.0-217.0.dev.tar.gz",
-            .hash = "1220dc88c809fcc6427d1f297744c40a304843d425b180684769bae4f18bedca16f7",
+            .url = "https://github.com/dart-lang/sdk/archive/refs/tags/3.7.0-204.0.dev.tar.gz",
+            .hash = "1220a9b802189b8f98c3ce1d51ada3d417236fdc10f3bc8b15a8fb6bc6280eb0e553",
         },
         .icu = .{
             .url = "https://github.com/MidstallSoftware/icu.zig/archive/1341bf90d54ff64511ff918a6efb297541fdbfb4.tar.gz",
@@ -18,6 +18,130 @@
         .boringssl = .{
             .url = "https://github.com/MidstallSoftware/boringssl.zig/archive/40e05ef27a0f97e3ffc2190ef2059a76e63af28e.tar.gz",
             .hash = "1220d9a8bcc89c9381669f907e7fa0914c12b63030447918dc7a9f1c11628f69e7dc",
+        },
+        .@"dart-devtools" = .{
+            .url = "https://github.com/flutter/devtools/archive/3e5327a02693b1405359dc5322d7f0a40151b9b7.tar.gz",
+            .hash = "1220b7ef8aa355fb585677bb327fe64e68cea299aba25d430ab015d13e8cf2a5c7f8",
+        },
+        .@"dart-core" = .{
+            .url = "https://github.com/dart-lang/core/archive/7f9f597e64fa52faebd3c0a2214f61a7b081174d.tar.gz",
+            .hash = "122085037da5687ce8ec324bbf8c5e352f8296cf177a6045dba7dfa5b7971898fb6b",
+        },
+        .@"dart-package_config" = .{
+            .url = "https://github.com/dart-lang/package_config/archive/76f2f6c245451da1fa24d7bbb00251b909e729a5.tar.gz",
+            .hash = "12207a47adef30bd2adcfb0759094b41a7f5948aca1ddc57400e28867cfe61be9677",
+        },
+        .@"dart-pub_semver" = .{
+            .url = "https://github.com/dart-lang/pub_semver/archive/8e9fcb9d3f89f06022387f906da4d380688f935c.tar.gz",
+            .hash = "12202e6ba89e28c3310e2c42db316db9b0e0d774f41ad6932b6f3252ed43bf1a4921",
+        },
+        .@"dart-yaml" = .{
+            .url = "https://github.com/dart-lang/yaml/archive/2a3727288a9336b6f9b7c5236657414ce1ee5d8a.tar.gz",
+            .hash = "1220ab0dc8e34f237a001891f7e37b65379639f9021962f71464b885472ca0493a18",
+        },
+        .@"dart-source_span" = .{
+            .url = "https://github.com/dart-lang/source_span/archive/22a243eb50d926935a8a1300a49af6d2988c3ae6.tar.gz",
+            .hash = "1220856a9986f85b685285f4485180ec74b7340f05ad80387f45da100e9ad1f50d06",
+        },
+        .@"dart-term_glyph" = .{
+            .url = "https://github.com/dart-lang/term_glyph/archive/9ed8ed96fdd84cb7b72ee1be3e86010969fa95d4.tar.gz",
+            .hash = "122051f2386e8393628056c47a1eca4c40013fdd3c0f8c8d7cc7bc9d74b1fc8c9e95",
+        },
+        .@"dart-string_scanner" = .{
+            .url = "https://github.com/dart-lang/string_scanner/archive/77de235c061a09264cae920e52939787325c8cae.tar.gz",
+            .hash = "1220a7d78664080b1da6764c98c28d078e8ef3a0c7dc74c393f38fdda2201bfb95bc",
+        },
+        .@"dart-source_maps" = .{
+            .url = "https://github.com/dart-lang/source_maps/archive/198d32bbde2f5736c04dfbab306a17096fd1648b.tar.gz",
+            .hash = "1220579cf88a94058f925e7a64fbe901f8a87845667b5742dec4e2dabf4529d27d8f",
+        },
+        .@"dart-stream_channel" = .{
+            .url = "https://github.com/dart-lang/stream_channel/archive/71fe6dd315e7f451466da80f7af2661cd28aaaea.tar.gz",
+            .hash = "1220e30841ef29a09fb6410d4d10a43b66bc68720e40bc0ca0809f0dfdfcaa15212b",
+        },
+        .@"dart-shelf" = .{
+            .url = "https://github.com/dart-lang/shelf/archive/2b5b683e78f5cc84e479a43297fd7b5489d7db02.tar.gz",
+            .hash = "12209d6892d61e7dda53bb1478468c46b678398344d3be4a32d1108063797b680008",
+        },
+        .@"dart-web_socket_channel" = .{
+            .url = "https://github.com/dart-lang/web_socket_channel/archive/7a2039fd7c4c656ab27850926f89103b5f188dab.tar.gz",
+            .hash = "122018a2fa53715bbcc76ee5e181e9937a0489d07e248ece2fe116ed90d968758d02",
+        },
+        .@"dart-http_parser" = .{
+            .url = "https://github.com/dart-archive/http_parser/archive/bc56d16444666c91acc80452e1286534ee3804e1.tar.gz",
+            .hash = "1220a86208762041454901fb8ef089e897db9a9c94e1941e7a430c3e24219e13d645",
+        },
+        .@"dart-stack_trace" = .{
+            .url = "https://github.com/dart-lang/stack_trace/archive/b660cfa444d46bcceb3a0eacbd6a2a7829da11de.tar.gz",
+            .hash = "1220d66e701c23a98cd05a8bdccdf5460686fb998b60731cd4d693c8b7fc316792db",
+        },
+        .@"dart-http" = .{
+            .url = "https://github.com/dart-lang/http/archive/79470d014b467f01b0e7c5b63ab6c86b22dec8db.tar.gz",
+            .hash = "122084d2d7612b9fa4fcd5dba842721c158093a1f35afb2b542d9cce461e0f7dfc81",
+        },
+        .@"dart-tools" = .{
+            .url = "https://github.com/dart-lang/tools/archive/223daf5300a5e3f6e09b7e24a5fda1009d6708f7.tar.gz",
+            .hash = "1220d51a166c7eb5355cc81be7831a979973c9817809d93056445721e5c1a2b7e14c",
+        },
+        .@"dart-yaml_edit" = .{
+            .url = "https://github.com/dart-lang/yaml_edit/archive/fbdc70acc164af187772e013a2e1364cd05b88dc.tar.gz",
+            .hash = "12201352f0eec9d80755af5a2bd53cdbd396b770ccd4dd1bc24048b737e855f3a2c4",
+        },
+        .@"dart-sse" = .{
+            .url = "https://github.com/dart-lang/sse/archive/b97dc3ad9a58a454dc5ffe5b3ec814dadc389e32.tar.gz",
+            .hash = "1220fb43bf04c68c25ce30d9ddb0894c8ee34774b0abaa45df7966e8ea2eb4f9b070",
+        },
+        .@"dart-watcher" = .{
+            .url = "https://github.com/dart-lang/watcher/archive/bc44e6f6b85972e516c44b9ae6c042b4cbd7c72b.tar.gz",
+            .hash = "12203d3c62d306cf9d90c725adeb8d1e6b1eae13259c99b307ea341f56bf274459fc",
+        },
+        .@"dart-web_inspection_protocol" = .{
+            .url = "https://github.com/google/webkit_inspection_protocol.dart/archive/effa75205516757795683d527c3dea9546eb0c32.tar.gz",
+            .hash = "122043e20d4d4a12cc3c5cf1e01ba699144f9c940ae5ea9711b7dff5f2fe497229d5",
+        },
+        .@"dart-dartdoc" = .{
+            .url = "https://github.com/dart-lang/dartdoc/archive/7444b397c9e66f5f4f1cd182188ff4773c040f74.tar.gz",
+            .hash = "1220df17aaa768f21ff5f2e517a5c55ffb493146b1d28808eceaadb2710f4a14bda6",
+        },
+        .@"dart-http_multi_server" = .{
+            .url = "https://github.com/dart-lang/http_multi_server/archive/f6a748819139b8cbf513d5fc36b10676b0cb066f.tar.gz",
+            .hash = "12201863032006539cb541d854e29d3ff899d81bbedc7beff7e92b282b64739c84b7",
+        },
+        .@"dart-native" = .{
+            .url = "https://github.com/dart-lang/native/archive/4b03d952059048149fd680ff77034887b53e7ed9.tar.gz",
+            .hash = "1220590e8514ff37cc0b4f96cd5eaedb7c11ca8f502c14ac72708103e61e9bbfd08d",
+        },
+        .@"dart-pub" = .{
+            .url = "https://github.com/dart-lang/pub/archive/3246cfe56d913666dcef8968ee97574e7f11aa35.tar.gz",
+            .hash = "1220f9c2412ff23823fdb749d00873bdf2e2733963cf7ffdbec396ab31585360ca80",
+        },
+        .@"dart-markdown" = .{
+            .url = "https://github.com/dart-lang/markdown/archive/4d5dbc659955973902f2585c54e94d453532db70.tar.gz",
+            .hash = "1220ea5851544c846b2bec5ef9a6f722a03181ac9c79c481bd55b38ed7ed3f367821",
+        },
+        .@"dart-glob" = .{
+            .url = "https://github.com/dart-lang/glob/archive/994191a107b99a1911a3ef52ca238cd9305c8d37.tar.gz",
+            .hash = "1220285e20b367cc55ed08bfe59dc66426c10f880a57eca562a3945660fc2ea7be0c",
+        },
+        .@"dart-dart_style" = .{
+            .url = "https://github.com/dart-lang/dart_style/archive/a5f9e21973347423916e6fffa001b8289636607e.tar.gz",
+            .hash = "12201795e11d8e282337e53cfd546c7c7d66d4ac68ff5fa6c71a1d627d5a394be952",
+        },
+        .@"dart-tar" = .{
+            .url = "https://github.com/simolus3/tar/archive/5a1ea943e70cdf3fa5e1102cdbb9418bd9b4b81a.tar.gz",
+            .hash = "1220bf179b0d52e27a8ccc5fe6e7847848b09e6116f351b2fbbd47123f7e8d0fe3a0",
+        },
+        .@"dart-webdev" = .{
+            .url = "https://github.com/dart-lang/webdev/archive/93f720a9fb476ed2cc292308da977aa8ca4fdfca.tar.gz",
+            .hash = "1220c1fc0f6f92f6035638c3eb98376a81e2116e9ae06a84e85ec252f2c18efead34",
+        },
+        .@"dart-pool" = .{
+            .url = "https://github.com/dart-lang/pool/archive/f85209d83cb0aa3c5612ed80de32df51ba580abd.tar.gz",
+            .hash = "1220c6ede8b93dde98140b2f6e62ae4ac1e35a0abce096a9b94225ccc8189fce464b",
+        },
+        .@"dart-leak_tracker" = .{
+            .url = "https://github.com/dart-lang/leak_tracker/archive/a93ca0e96dcdf1c45d5e5187d40766ddb5b6483f.tar.gz",
+            .hash = "1220c88363928419007a8a6ba8b5f9a64a8fba3ba9224ea5450823246eca24fd8831",
         },
     },
 }

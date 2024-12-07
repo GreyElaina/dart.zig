@@ -30,15 +30,15 @@ const char* Version::Channel() {
 
 const char* Version::snapshot_hash_ = "{{SNAPSHOT_HASH}}";
 const char* Version::str_ =
-    "3.7.0-217.0.dev (dev) (Thu Dec 05 20:05:00 2024 +0000)"
+    "3.7.0-204.0.dev (dev) (Mon Dec 2 00:03:42 2024 -0800)"
     " on \"" kHostOperatingSystemName
     "_"
 #if defined(USING_SIMULATOR)
     "sim"
 #endif
     kTargetArchitectureName "\"";
-const char* Version::commit_ = "3.7.0-217.0.dev";
-const char* Version::git_short_hash_ = "b57cc62";
+const char* Version::commit_ = "3.7.0-204.0.dev";
+const char* Version::git_short_hash_ = "4bc4d01";
 const char* Version::channel_ = "dev";
 
 }  // namespace dart

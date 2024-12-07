@@ -47,15 +47,41 @@
                 llvmPackages = llvmPackages_19;
               };
 
-          dart-zig = stdenv.mkDerivation {
+          dart-zig = stdenv.mkDerivation (finalAttrs: {
             pname = "dart-zig";
             version = self.shortRev or "dirty";
+
+            dartVersion = "3.7.0-204.0.dev";
+            dartChannel = "dev";
+
+            dart = dart.override {
+              version = finalAttrs.dartVersion;
+              sources = {
+                "${finalAttrs.dartVersion}-x86_64-linux" = fetchzip {
+                  url = "https://storage.googleapis.com/dart-archive/channels/${finalAttrs.dartChannel}/release/${finalAttrs.dartVersion}/sdk/dartsdk-linux-x64-release.zip";
+                  sha256 = finalAttrs.passthru.dartHash.x86_64-linux;
+                };
+                "${finalAttrs.dartVersion}-aarch64-linux" = fetchzip {
+                  url = "https://storage.googleapis.com/dart-archive/channels/${finalAttrs.dartChannel}/release/${finalAttrs.dartVersion}/sdk/dartsdk-linux-arm64-release.zip";
+                  sha256 = finalAttrs.passthru.dartHash.aarch64-linux;
+                };
+                "${finalAttrs.dartVersion}-x86_64-darwin" = fetchzip {
+                  url = "https://storage.googleapis.com/dart-archive/channels/${finalAttrs.dartChannel}/release/${finalAttrs.dartVersion}/sdk/dartsdk-macos-x64-release.zip";
+                  sha256 = finalAttrs.passthru.dartHash.x86_64-darwin;
+                };
+                "${finalAttrs.dartVersion}-aarch64-darwin" = fetchzip {
+                  url = "https://storage.googleapis.com/dart-archive/channels/${finalAttrs.dartChannel}/release/${finalAttrs.dartVersion}/sdk/dartsdk-macos-arm64-release.zip";
+                  sha256 = finalAttrs.passthru.dartHash.aarch64-darwin;
+                };
+              };
+            };
 
             src = lib.cleanSource self;
 
             nativeBuildInputs = [
               pkgs.zig
               pkgs.zig.hook
+              finalAttrs.dart
             ];
 
             postPatch = ''
@@ -65,7 +91,14 @@
             postInstall = ''
               patchelf --set-rpath $out/lib $out/bin/*
             '';
-          };
+
+            passthru.dartHash = {
+              aarch64-linux = "sha256-u/LyW0Ti4SL6lUnrbAhZmm8GxpgliBhchjQMtBVehXI=";
+              aarch64-darwin = lib.fakeHash;
+              x86_64-linux = lib.fakeHash;
+              x86_64-darwin = lib.fakeHash;
+            };
+          });
 
           zon2nix = stdenv.mkDerivation {
             pname = "zon2nix";
