@@ -28,7 +28,7 @@ const char* Version::Channel() {
   return channel_;
 }
 
-const char* Version::snapshot_hash_ = "{{SNAPSHOT_HASH}}";
+const char* Version::snapshot_hash_ = "ddcbb32cd5a0c7787";
 const char* Version::str_ =
     "3.7.0-204.0.dev (dev) (Mon Dec 2 00:03:42 2024 -0800)"
     " on \"" kHostOperatingSystemName

@@ -73,7 +73,7 @@ pub fn binToLinkable(
     defer code.deinit();
 
     code.appendSlice("comptime {\n") catch @panic("OOM");
-    code.appendSlice(b.fmt("  @export(&{s}.ptr, .{{\n    .name = \"{s}\",\n", .{ symbol_name, symbol_name })) catch @panic("OOM");
+    code.appendSlice(b.fmt("  @export({s}.ptr, .{{\n    .name = \"{s}\",\n", .{ symbol_name, symbol_name })) catch @panic("OOM");
 
     if (options.executable) {
         code.appendSlice("    .section = \"text\",\n") catch @panic("OOM");
