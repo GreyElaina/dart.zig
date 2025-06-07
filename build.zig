@@ -5,23 +5,24 @@ const fs = std.fs;
 const makePackages = @import("./packages.zig").makePackages;
 const binToLinkable = @import("./utils.zig").binToLinkable;
 const Runtime = @import("./runtime.zig").Runtime;
+const UpdateSnapshotHashStep = @import("./update_snapshot_hash.zig").UpdateSnapshotHashStep;
 
 pub fn build(b: *std.Build) void {
     const optimize = b.standardOptimizeOption(.{});
     const target = b.standardTargetOptions(.{});
 
     const linkage = b.option(std.builtin.LinkMode, "linkage", "whether to statically or dynamically link the library") orelse @as(std.builtin.LinkMode, if (target.result.isGnuLibC()) .dynamic else .static);
-    const use_compiled_gen_snapshot = b.option(bool, "use-compiled-gen-snapshot", "whether to use the gen_snapshot provided by the host or build one") orelse false;
     const sdk_hash = b.option([]const u8, "sdk-hash", "the sdk hash, must be a 10byte string") orelse "0000000000";
     const ship_dartdev = b.option(bool, "ship-dartdev", "whether to ship dartdev with the runtime") orelse true;
 
     const dart_host_exe = b.findProgram(&.{"dart"}, &.{}) catch |e| std.debug.panic("Cannot find dart: {s}", .{@errorName(e)});
 
-    const gen_snapshot_host_exe = b.pathJoin(&.{
-        fs.path.dirname(dart_host_exe) orelse @panic("Failed to get the dirname"),
-        "utils",
-        "gen_snapshot",
-    });
+    const dart_sdk_dep = b.dependency("dartsdk", .{});
+    const update_snapshot_hash_step = UpdateSnapshotHashStep.create(
+        b,
+        dart_sdk_dep.path("."),
+        b.path("runtime/vm/version.cc")
+    );
 
     const host_runtime = Runtime.create(b, .{
         .target = target,
@@ -29,6 +30,7 @@ pub fn build(b: *std.Build) void {
         .linkage = linkage,
         .precompiler = true,
         .exclude_cfe_and_kernel_platform = true,
+        .update_snapshot_hash_step = update_snapshot_hash_step,
     });
 
     const dart_pkgs = makePackages(b);
@@ -98,19 +100,14 @@ pub fn build(b: *std.Build) void {
     kernel_service_dill_compile.setCwd(dart_pkgs.getDirectory());
 
     const dart_snapshot_compile_wf = b.addWriteFiles();
-    const dart_snapshot_compile_precompiler = std.Build.Step.Run.create(b, "dart_snapshot_compile_precompiler");
-    dart_snapshot_compile_precompiler.addArgs(&.{
-        "./gen_snapshot_precompiler"
-    });
-    const dart_snapshot_compile = if (use_compiled_gen_snapshot) dart_snapshot_compile_precompiler else b.addSystemCommand(&.{
-        gen_snapshot_host_exe,
+    const dart_snapshot_compile = std.Build.Step.Run.create(b, "dart_snapshot_compile");
+    dart_snapshot_compile.addArgs(&.{
+        "./gen_snapshot"
     });
 
     dart_snapshot_compile.setCwd(dart_snapshot_compile_wf.getDirectory());
 
-    if (use_compiled_gen_snapshot) {
-        _ = dart_snapshot_compile_wf.addCopyFile(host_runtime.gen_snapshot.getEmittedBin(), "gen_snapshot_precompiler");
-    }
+    _ = dart_snapshot_compile_wf.addCopyFile(host_runtime.gen_snapshot.getEmittedBin(), "gen_snapshot");
 
     dart_snapshot_compile.addArgs(&.{
         "--deterministic",
@@ -155,6 +152,7 @@ pub fn build(b: *std.Build) void {
     const dartdev_snapshot = std.Build.Step.Run.create(b, "dartdev");
     dartdev_snapshot.step.dependOn(&dart_frontend_compile_platform.step);
     dartdev_snapshot.step.dependOn(&dart_snapshot_compile.step);
+    dartdev_snapshot.step.dependOn(&update_snapshot_hash_step.step);
 
     dartdev_snapshot.addArgs(&.{
         dart_host_exe,
@@ -188,6 +186,7 @@ pub fn build(b: *std.Build) void {
         .exclude_cfe_and_kernel_platform = false,
         .snapshot_empty = false,
         .product = false,
+        .update_snapshot_hash_step = update_snapshot_hash_step,
     });
 
     const kernel_service_dill_symbols = binToLinkable(b, kernel_service_dill, "kKernelServiceDill", target, optimize, .{

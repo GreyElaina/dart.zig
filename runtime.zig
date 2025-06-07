@@ -1,6 +1,7 @@
 const std = @import("std");
 const Compile = std.Build.Step.Compile;
 const collectSources = @import("./utils.zig").collectSources;
+const UpdateSnapshotHashStep = @import("./update_snapshot_hash.zig").UpdateSnapshotHashStep;
 
 pub const Runtime = struct {
     step: std.Build.Step,
@@ -15,6 +16,7 @@ pub const Runtime = struct {
     gen_snapshot_dart_io: *Compile,
     gen_snapshot: *Compile,
     dart: *Compile,
+    update_snapshot_hash_step: *UpdateSnapshotHashStep,
 
     pub const Options = struct {
         target: std.Build.ResolvedTarget,
@@ -26,6 +28,7 @@ pub const Runtime = struct {
         product: bool = false,
         include_suffix: bool = false,
         snapshot_empty: bool = false,
+        update_snapshot_hash_step: *UpdateSnapshotHashStep,
     };
 
     pub fn create(b: *std.Build, options: Options) *Runtime {
@@ -76,6 +79,9 @@ pub const Runtime = struct {
         };
 
         const dart_sdk_dep = b.dependency("dartsdk", .{});
+
+        // Use the provided version update step
+        const update_snapshot_hash_step = options.update_snapshot_hash_step;
 
         const icu = b.dependency("icu", .{
             .target = options.target,
@@ -359,6 +365,9 @@ pub const Runtime = struct {
             .flags = cflags.items,
         });
 
+        // Make sure version file is updated before compiling libdart
+        libdart.step.dependOn(&update_snapshot_hash_step.step);
+
         libdart.addIncludePath(dart_sdk_dep.path("runtime"));
 
         libdart.linkLibrary(double_conversion);
@@ -608,6 +617,7 @@ pub const Runtime = struct {
             .gen_snapshot_dart_io = gen_snapshot_dart_io,
             .gen_snapshot = gen_snapshot,
             .dart = dart,
+            .update_snapshot_hash_step = update_snapshot_hash_step,
         };
 
         self.step.dependOn(&self.libdart.step);
