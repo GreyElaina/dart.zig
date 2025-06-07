@@ -28,17 +28,17 @@ const char* Version::Channel() {
   return channel_;
 }
 
-const char* Version::snapshot_hash_ = "ddcbb32cd5a0c7787";
+const char* Version::snapshot_hash_ = "42f987b8c14084aea";
 const char* Version::str_ =
-    "3.7.0-204.0.dev (dev) (Mon Dec 2 00:03:42 2024 -0800)"
+    "3.8.1 (main) (Wed Jun 5 00:00:00 2025 +0000)"
     " on \"" kHostOperatingSystemName
     "_"
 #if defined(USING_SIMULATOR)
     "sim"
 #endif
     kTargetArchitectureName "\"";
-const char* Version::commit_ = "3.7.0-204.0.dev";
-const char* Version::git_short_hash_ = "4bc4d01";
+const char* Version::commit_ = "3.8.1";
+const char* Version::git_short_hash_ = "4bb26ad";
 const char* Version::channel_ = "dev";
 
 }  // namespace dart

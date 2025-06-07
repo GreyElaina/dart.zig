@@ -3,7 +3,7 @@ const std = @import("std");
 pub fn makePackages(b: *std.Build) *std.Build.Step.WriteFile {
     const pkgs = b.addWriteFiles();
 
-    const dart_sdk_dep = b.dependency("dart-sdk", .{});
+    const dart_sdk_dep = b.dependency("dartsdk", .{});
     const dart_devtools = b.dependency("dart-devtools", .{});
     const dart_core = b.dependency("dart-core", .{});
 

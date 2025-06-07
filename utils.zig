@@ -65,32 +65,37 @@ pub fn binToLinkable(
 ) *std.Build.Step.Compile {
     const name = fs.path.basename(file.getDisplayName());
     const wf = b.addWriteFiles();
-
     _ = wf.addCopyFile(file, b.fmt("{s}.bin", .{name}));
     if (options.step) |step| wf.step.dependOn(step);
-
     var code = std.ArrayList(u8).init(b.allocator);
     defer code.deinit();
-
     code.appendSlice("comptime {\n") catch @panic("OOM");
     code.appendSlice(b.fmt("  @export({s}.ptr, .{{\n    .name = \"{s}\",\n", .{ symbol_name, symbol_name })) catch @panic("OOM");
 
     if (options.executable) {
-        code.appendSlice("    .section = \"text\",\n") catch @panic("OOM");
+        if (target.result.os.tag.isDarwin()) {
+            code.appendSlice("    .section = \"__TEXT,__text\",\n") catch @panic("OOM");
+        } else {
+            code.appendSlice("    .section = \"text\",\n") catch @panic("OOM");
+        }
     } else {
-        code.appendSlice("    .section = \"rodata\",\n") catch @panic("OOM");
+        if (target.result.os.tag.isDarwin()) {
+            code.appendSlice("    .section = \"__DATA,__const\",\n") catch @panic("OOM");
+        } else {
+            code.appendSlice("    .section = \"rodata\",\n") catch @panic("OOM");
+        }
     }
-
+    
     if (options.size_symbol) |size_symbol| {
         code.appendSlice(b.fmt("  }});\n  @export(&{s}.len, .{{ .name = \"{s}\"", .{ symbol_name, size_symbol })) catch @panic("OOM");
     }
-
     code.appendSlice("  });\n}\n\n") catch @panic("OOM");
-
     code.appendSlice(b.fmt("pub const {s} align(32) = @embedFile(\"{s}.bin\");", .{ symbol_name, name })) catch @panic("OOM");
-
+    
+    // std.debug.print("Code for {s}:\n{s}\n", .{name, code.items});
+    
     return b.addObject(.{
-        .name = b.fmt("{s} {s}", .{ name, symbol_name }),
+        .name = b.fmt("{s}_{s}", .{ name, symbol_name }),
         .root_source_file = wf.add(b.fmt("{s}.zig", .{name}), code.items),
         .target = target,
         .optimize = optimize,

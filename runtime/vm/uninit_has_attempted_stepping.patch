@@ -1,0 +1,12 @@
+--- a/runtime/vm/isolate.cc
++++ b/runtime/vm/isolate.cc
+@@ -364,7 +364,8 @@ IsolateGroup::IsolateGroup(std::shared_ptr<IsolateGroupSource> source,
+ #endif
+       cache_mutex_(),
+       handler_info_cache_(),
+-      catch_entry_moves_cache_() {
++      catch_entry_moves_cache_(),
++      has_attempted_stepping_(false) {
+   FlagsCopyFrom(api_flags);
+   if (!is_vm_isolate) {
+     intptr_t max_worker_threads;

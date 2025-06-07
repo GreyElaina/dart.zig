@@ -75,7 +75,7 @@ pub const Runtime = struct {
             break :blk parts.items;
         };
 
-        const dart_sdk_dep = b.dependency("dart-sdk", .{});
+        const dart_sdk_dep = b.dependency("dartsdk", .{});
 
         const icu = b.dependency("icu", .{
             .target = options.target,
@@ -196,7 +196,22 @@ pub const Runtime = struct {
 
         libdart_platform.addCSourceFiles(.{
             .root = dart_sdk_dep.path("runtime/platform"),
-            .files = collectSources(b, dart_sdk_dep.path("runtime/platform/platform_sources.gni"), "platform_sources"),
+            .files = blk: {
+                const all_files = collectSources(b, dart_sdk_dep.path("runtime/platform/platform_sources.gni"), "platform_sources");
+                var filtered = std.ArrayList([]const u8).init(b.allocator);
+
+                for (all_files) |file| {
+                    if (!std.mem.eql(u8, file, "utils_macos.cc")) {
+                        filtered.append(file) catch @panic("OOM");
+                    }
+                }
+                break :blk filtered.toOwnedSlice() catch @panic("OOM");
+            },
+            .flags = cflags.items,
+        });
+
+        libdart_platform.addCSourceFile(.{
+            .file = b.path("runtime/platform/utils_macos.cc"),
             .flags = cflags.items,
         });
 
@@ -216,7 +231,22 @@ pub const Runtime = struct {
 
         libdart_vm.addCSourceFiles(.{
             .root = dart_sdk_dep.path("runtime/vm"),
-            .files = collectSources(b, dart_sdk_dep.path("runtime/vm/vm_sources.gni"), "vm_sources"),
+            // .files = collectSources(b, dart_sdk_dep.path("runtime/vm/vm_sources.gni"), "vm_sources"),
+            .files = blk: {
+                const all_files = collectSources(b, dart_sdk_dep.path("runtime/vm/vm_sources.gni"), "vm_sources");
+                var filtered = std.ArrayList([]const u8).init(b.allocator);
+                for (all_files) |file| {
+                    if (!std.mem.eql(u8, file, "isolate.cc")) {
+                        filtered.append(file) catch @panic("OOM");
+                    }
+                }
+                break :blk filtered.toOwnedSlice() catch @panic("OOM");
+            },
+            .flags = cflags.items,
+        });
+
+        libdart_vm.addCSourceFile(.{
+            .file = b.path("runtime/vm/isolate.cc"),
             .flags = cflags.items,
         });
 
@@ -252,6 +282,7 @@ pub const Runtime = struct {
 
         libdart_vm.addIncludePath(dart_sdk_dep.path("runtime"));
 
+        libdart_vm.linkLibrary(boringssl.artifact("crypto"));
         libdart_vm.linkLibrary(icu.artifact("icui18n"));
         libdart_vm.linkLibrary(icu.artifact("icuuc"));
         libdart_vm.linkLibCpp();
@@ -286,16 +317,32 @@ pub const Runtime = struct {
         libdart_builtin.addIncludePath(dart_sdk_dep.path("runtime"));
         libdart_builtin.linkLibCpp();
 
-        const libdart = std.Build.Step.Compile.create(b, .{
-            .name = b.fmt("dart{s}", .{suffix}),
-            .root_module = .{
+        // const libdart = b.addStaticLibrary(.{
+        // .name = b.fmt("dart{s}", .{suffix}),
+        // .target = options.target,
+        // .optimize = options.optimize,
+        // });
+        // libdart.linkLibCpp();
+
+        const libdart = if (options.linkage == .dynamic) blk: {
+            // Build as a shared library if dynamic linkage is requested
+            const shared_lib = b.addSharedLibrary(.{
+                .name = b.fmt("dart{s}", .{suffix}),
                 .target = options.target,
                 .optimize = options.optimize,
-                .link_libcpp = true,
-            },
-            .kind = .lib,
-            .linkage = options.linkage,
-        });
+            });
+            shared_lib.linkLibCpp();
+            break :blk shared_lib;
+        } else blk: {
+            // Build as a static library otherwise
+            const static_lib = b.addStaticLibrary(.{
+                .name = b.fmt("dart{s}", .{suffix}),
+                .target = options.target,
+                .optimize = options.optimize,
+            });
+            static_lib.linkLibCpp();
+            break :blk static_lib;
+        };
 
         libdart.addCSourceFiles(.{
             .root = dart_sdk_dep.path("runtime/vm"),
@@ -319,6 +366,7 @@ pub const Runtime = struct {
         libdart.linkLibrary(libdart_compiler);
         libdart.linkLibrary(libdart_platform);
         libdart.linkLibrary(libdart_vm);
+        // libdart.linkLibrary(libdart_builtin);
 
         const native_assets = b.addStaticLibrary(.{
             .name = b.fmt("native-assets{s}", .{suffix}),
@@ -393,11 +441,30 @@ pub const Runtime = struct {
         gen_snapshot_dart_io.linkLibrary(boringssl.artifact("ssl"));
         gen_snapshot_dart_io.linkLibCpp();
 
+        // Link macOS system frameworks for dart
+        if (options.target.result.os.tag == .macos) {
+            gen_snapshot_dart_io.linkFramework("CoreFoundation");
+            gen_snapshot_dart_io.linkFramework("Foundation");
+            gen_snapshot_dart_io.linkFramework("Security");
+            gen_snapshot_dart_io.linkFramework("CoreServices");
+
+            var macos_cflags = std.ArrayList([]const u8).init(b.allocator);
+            macos_cflags.appendSlice(cflags.items) catch @panic("OOM");
+            macos_cflags.append("-fobjc-arc") catch @panic("OOM");
+
+            gen_snapshot_dart_io.addCSourceFiles(.{
+                .root = dart_sdk_dep.path("runtime/bin"),
+                .files = &.{
+                    "platform_macos_cocoa.mm",
+                },
+                .flags = macos_cflags.items,
+            });
+        }
+
         const gen_snapshot = b.addExecutable(.{
             .name = b.fmt("gen_snapshot{s}", .{suffix}),
             .target = options.target,
             .optimize = options.optimize,
-            .linkage = options.linkage,
         });
 
         gen_snapshot.addCSourceFiles(.{
@@ -428,11 +495,19 @@ pub const Runtime = struct {
         gen_snapshot.linkLibrary(libdart);
         gen_snapshot.linkLibrary(gen_snapshot_dart_io);
 
+        // Link macOS system frameworks for dart
+        if (options.target.result.os.tag == .macos) {
+            gen_snapshot.linkFramework("CoreFoundation");
+            gen_snapshot.linkFramework("Foundation");
+            gen_snapshot.linkFramework("Security");
+            gen_snapshot.linkFramework("CoreServices");
+        }
+
         const dart = b.addExecutable(.{
             .name = b.fmt("dart{s}", .{suffix}),
             .target = options.target,
             .optimize = options.optimize,
-            .linkage = options.linkage,
+            .linkage = if (options.target.result.os.tag == .macos) .dynamic else options.linkage,
         });
 
         dart.addCSourceFiles(.{
@@ -495,6 +570,26 @@ pub const Runtime = struct {
         dart.linkLibrary(libdart_builtin);
         dart.linkLibrary(libdart_platform);
         dart.linkLibrary(libdart);
+
+        // Link macOS system frameworks for dart
+        if (options.target.result.os.tag == .macos) {
+            dart.linkFramework("CoreFoundation");
+            dart.linkFramework("Foundation");
+            dart.linkFramework("Security");
+            dart.linkFramework("CoreServices");
+
+            var macos_cflags = std.ArrayList([]const u8).init(b.allocator);
+            macos_cflags.appendSlice(cflags.items) catch @panic("OOM");
+            macos_cflags.append("-fobjc-arc") catch @panic("OOM");
+
+            dart.addCSourceFiles(.{
+                .root = dart_sdk_dep.path("runtime/bin"),
+                .files = &.{
+                    "platform_macos_cocoa.mm",
+                },
+                .flags = macos_cflags.items,
+            });
+        }
 
         self.* = .{
             .step = std.Build.Step.init(.{

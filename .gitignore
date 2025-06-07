@@ -1,2 +1,4 @@
 .zig-cache/
 zig-out/
+runtime/vm/isolate.cc
+runtime/platform/utils_macos.cc

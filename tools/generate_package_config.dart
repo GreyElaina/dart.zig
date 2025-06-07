@@ -19,21 +19,31 @@ void main(List<String> args) {
   final fluteExists =
       Directory(join(repoRoot, platform('third_party/flute'))).existsSync();
 
+  var excludedPackages = <String>[
+    "pkg/observatory",
+    "pkg/front_end/test"
+  ];
+
   var packageDirs = [
     ...listSubdirectories(platform('pkg')),
     ...listSubdirectories(platform('third_party/pkg')),
     if (fluteExists) ...listSubdirectories(platform('third_party/flute')),
     platform('pkg/vm_service/test/test_package'),
     platform('runtime/observatory'),
-    platform('runtime/observatory/tests/service/observatory_test_package'),
+    // platform('runtime/observatory/tests/service/observatory_test_package'),
+    platform("pkg/front_end"),
     platform('runtime/tools/heapsnapshot'),
     platform('sdk/lib/_internal/sdk_library_metadata'),
     platform('third_party/devtools/devtools_shared'),
     platform('tools/package_deps'),
   ];
 
-  var cfePackageDirs = [
-    platform('pkg/front_end/testcases'),
+  packageDirs.removeWhere((path) {
+    return excludedPackages.any((p) => path.startsWith(p));
+  });
+
+  var cfePackageDirs = <String>[
+    // platform('pkg/front_end/testcases'),
   ];
 
   var feAnalyzerSharedPackageDirs = [
@@ -168,6 +178,11 @@ void writeIfDifferent(File file, String contents) {
 Iterable<Package> makePackageConfigs(List<String> packageDirs) sync* {
   for (var packageDir in packageDirs) {
     var name = pubspecName(packageDir);
+
+    if (name == null) {
+      continue;
+    }
+
     var version = pubspecLanguageVersion(packageDir);
     var hasLibDirectory =
         Directory(join(repoRoot, packageDir, 'lib')).existsSync();
@@ -241,7 +256,7 @@ Iterable<String> listSubdirectories(String parentPath) sync* {
 final versionRE = RegExp(r"(?:\^|>=)(\d+\.\d+)");
 
 /// Parses the package name in the pubspec for [packageDir].
-String pubspecName(String packageDir) {
+String? pubspecName(String packageDir) {
   var pubspecFile = File(join(repoRoot, packageDir, 'pubspec.yaml'));
 
   if (!pubspecFile.existsSync()) {
@@ -251,8 +266,10 @@ String pubspecName(String packageDir) {
 
   var contents = pubspecFile.readAsLinesSync();
   if (!contents.any((line) => line.contains('name: '))) {
-    print('Error: Pubspec for $packageDir has no name.');
-    exit(1);
+    print('Warning: Pubspec for $packageDir has no name.');
+    // exit(1);
+    // return basename(packageDir); // Fallback to directory name.
+    return null;
   }
 
   var name = contents.firstWhere((line) => line.contains('name: '));

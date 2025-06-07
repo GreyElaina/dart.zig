@@ -1,0 +1,36 @@
+diff --git a/runtime/platform/utils_macos.cc b/runtime/platform/utils_macos.cc
+index 01ed447..fa94a36 100644
+--- a/runtime/platform/utils_macos.cc
++++ b/runtime/platform/utils_macos.cc
+@@ -207,18 +207,19 @@ int32_t MacOSXMajorVersion(int32_t version) {
+ }  // namespace
+ 
+ char* CheckIsAtLeastMinRequiredMacOSXVersion() {
+-  const int32_t current_version = internal::DarwinVersion();
+-
+-  if (current_version >= MAC_OS_X_VERSION_MIN_REQUIRED) {
+-    return nullptr;
+-  }
+-
+-  return Utils::SCreate(
+-      "Current Mac OS X version %d.%d is lower than minimum supported version "
+-      "%d.%d",
+-      MacOSXMajorVersion(current_version), MacOSXMinorVersion(current_version),
+-      MacOSXMajorVersion(MAC_OS_X_VERSION_MIN_REQUIRED),
+-      MacOSXMinorVersion(MAC_OS_X_VERSION_MIN_REQUIRED));
++//   const int32_t current_version = internal::DarwinVersion();
++
++//   if (current_version >= MAC_OS_X_VERSION_MIN_REQUIRED) {
++//     return nullptr;
++//   }
++
++//   return Utils::SCreate(
++//       "Current Mac OS X version %d.%d is lower than minimum supported version "
++//       "%d.%d",
++//       MacOSXMajorVersion(current_version), MacOSXMinorVersion(current_version),
++//       MacOSXMajorVersion(MAC_OS_X_VERSION_MIN_REQUIRED),
++//       MacOSXMinorVersion(MAC_OS_X_VERSION_MIN_REQUIRED));
++    return nullptr;  // No minimum version check, due to zig's uname implementation is broken.
+ }
+ #endif
+ 
