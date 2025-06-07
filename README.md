@@ -4,7 +4,7 @@
 
 截止更新，已跟进至 3.9.0-209.0.dev 版本。
 
-- 修复 MacOS 构建（zig 的 `uname` 实现有误）；
+- 修复 MacOS 构建（zig 的 `uname` 实现[有误](https://github.com/ziglang/zig/issues/24081)，故禁用了系统版本验证）；
 - 修复 dart 实现中包含的一个未初始化问题；
 - 修复链接方式指定；
 - 允许在编译时编译 dart cli 所需要的 `dartdev` 快照并交付；
@@ -36,6 +36,6 @@ zig build
 zig fetch --save=dartsdk https://dart.googlesource.com/sdk.git/+archive/refs/tags/$VERSION.tar.gz
 ```
 
-完成后，可以通过编辑并执行 `scripts/update_deps.sh` 实现对 `build.zig.zon` 的更新。编辑需根据 Google 提供的 DEPS 文件。
+完成后，可以通过编辑并执行 `scripts/update_deps.sh` 实现对 `build.zig.zon` 的更新。编辑需根据 Google 提供的 DEPS 文件完成。
 
 此外，如果编译后发现提示 snapshot hash mismatch，可以根据提示编辑 `runtime/vm/version.cc`。
