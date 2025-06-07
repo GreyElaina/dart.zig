@@ -9,6 +9,7 @@
 - 修复链接方式指定；
 - 允许在编译时编译 dart cli 所需要的 `dartdev` 快照并交付；
 - 将所使用的依赖 Zig Build System 的依赖项修复至可用；
+- 自动计算 snapshot hash。
 
 目前仅有 MacOS 15.5 上使用 Zig 0.14.1 编译通过。
 
@@ -38,4 +39,4 @@ zig fetch --save=dartsdk https://dart.googlesource.com/sdk.git/+archive/refs/tag
 
 完成后，可以通过编辑并执行 `scripts/update_deps.sh` 实现对 `build.zig.zon` 的更新。编辑需根据 Google 提供的 DEPS 文件完成。
 
-此外，如果编译后发现提示 snapshot hash mismatch，可以根据提示编辑 `runtime/vm/version.cc`。
+此外，如果编译后发现提示 snapshot hash mismatch，可以根据提示编辑 `runtime/vm/version.cc`。理论上不需要。
