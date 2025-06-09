@@ -11,7 +11,7 @@
 - 将所使用的依赖 Zig Build System 的依赖项修复至可用；
 - 自动计算 snapshot hash。
 
-目前仅有 MacOS 15.5 上使用 Zig 0.14.1 编译通过。
+目前仅有 MacOS 15.5 与 Ubuntu 24.04 arm64 上使用 Zig 0.14.1 编译通过。
 
 ## 使用方法
 
